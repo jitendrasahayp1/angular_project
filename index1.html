@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="crudApp">
+<head>
+    <meta charset="UTF-8">
+    <title>AngularJS CRUD App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        input { margin: 5px; }
+        button { margin: 5px; }
+    </style>
+</head>
+<body ng-controller="MainController">
+
+<h2>AngularJS CRUD Example</h2>
+
+<input type="text" ng-model="newItem.name" placeholder="Enter name">
+<button ng-click="addItem()">Add</button>
+
+<ul>
+    <li ng-repeat="item in items">
+        <input type="text" ng-model="item.name">
+        <button ng-click="updateItem($index)">Update</button>
+        <button ng-click="deleteItem($index)">Delete</button>
+    </li>
+</ul>
+
+</body>
+</html>
