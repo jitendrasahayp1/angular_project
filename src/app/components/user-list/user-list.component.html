@@ -1,0 +1,22 @@
+<div class="user-list-container">
+  <div class="header">
+    <h1>User Roles Management</h1>
+    <p class="subtitle">Manage user access and permissions</p>
+  </div>
+
+  <div class="user-grid">
+    <div class="user-card" *ngFor="let user of users()">
+      <div class="user-info">
+        <div class="avatar">{{ user.name.charAt(0) }}</div>
+        <div class="user-details">
+          <h3>{{ user.name }}</h3>
+          <p>{{ user.email }}</p>
+        </div>
+      </div>
+      <div class="user-actions">
+        <span class="badge" [class]="roleBadgeClass[user.role]">{{ user.role }}</span>
+        <a class="btn-edit" [routerLink]="['/users', user.id, 'edit']">Edit Role</a>
+      </div>
+    </div>
+  </div>
+</div>

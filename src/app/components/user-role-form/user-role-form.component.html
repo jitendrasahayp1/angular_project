@@ -1,0 +1,45 @@
+<div class="form-container">
+  @if (user()) {
+    <div class="form-card">
+      <div class="form-header">
+        <a class="back-link" routerLink="/users">← Back to Users</a>
+        <h2>Edit User Role</h2>
+      </div>
+
+      <div class="user-summary">
+        <div class="avatar">{{ user()!.name.charAt(0) }}</div>
+        <div>
+          <p class="user-name">{{ user()!.name }}</p>
+          <p class="user-email">{{ user()!.email }}</p>
+        </div>
+      </div>
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" name="role" [ngModel]="selectedRole()" (ngModelChange)="selectedRole.set($event)">
+            @for (role of availableRoles; track role) {
+              <option [value]="role">{{ role | titlecase }}</option>
+            }
+          </select>
+          <p class="role-hint">
+            @switch (selectedRole()) {
+              @case ('admin') { Full access: can manage users, content, and settings. }
+              @case ('editor') { Can create and edit content, but cannot manage users. }
+              @case ('viewer') { Read-only access to content. }
+            }
+          </p>
+        </div>
+
+        @if (saved()) {
+          <p class="success-msg">✓ Role updated successfully! Redirecting…</p>
+        }
+
+        <div class="form-actions">
+          <a class="btn-cancel" routerLink="/users">Cancel</a>
+          <button class="btn-save" type="submit" [disabled]="saved()">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
