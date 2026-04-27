@@ -1,0 +1,6 @@
+{
+  "codeRepositoryPath": ".",
+  "transformationName": "AWS/angular-version-upgrade",
+  "additionalPlanContext": "Upgrade AngularJS 1.5+ ES6 application to modern Angular 17+ with proper component architecture, routing, services, and dependency injection patterns. Preserve all business logic and API integrations.",
+  "buildCommand": "npm run build"
+}

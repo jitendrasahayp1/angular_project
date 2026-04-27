@@ -13,7 +13,7 @@ servicesModule.service('JWT', JwtService);
 import ProfileService from './profile.service';
 servicesModule.service('Profile', ProfileService);
 
-import ArticlesService from './articles.service';
+import ArticlesService from './articles.service.js';
 servicesModule.service('Articles', ArticlesService);
 
 import CommentsService from './comments.service';
