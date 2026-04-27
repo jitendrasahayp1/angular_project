@@ -1,0 +1,92 @@
+======================================================================
+BUSINESS RULES — Conduit (RealWorld) Application
+Extracted from source AngularJS 1.5 application
+======================================================================
+
+AUTHENTICATION & AUTHORIZATION
+----------------------------------------------------------------------
+1. Users can register with a username, email, and password.
+2. Users can log in with email and password.
+3. Authentication uses JWT tokens stored in localStorage under the key 'jwtToken'.
+4. All API requests to the backend include an Authorization header with the format 'Token <jwt_token>' when a token exists.
+5. If an API request returns a 401 status, the JWT token is destroyed and the page is reloaded.
+6. Logged-in users are redirected away from the login and register pages.
+7. The editor page and settings page require the user to be authenticated; unauthenticated users are redirected to the home page.
+8. On application startup, the system verifies the stored JWT token by calling GET /user with the token header.
+9. If token verification fails, the token is destroyed and the user is treated as unauthenticated.
+10. After successful login or registration, the user is redirected to the home page.
+
+ARTICLES (CRUD)
+----------------------------------------------------------------------
+11. Any authenticated user can create a new article with a title, description, body (in markdown), and optional tags.
+12. An article's body is rendered as HTML from markdown using the marked library.
+13. Only the author of an article can edit that article.
+14. Only the author of an article can delete that article.
+15. Articles are listed with pagination, showing 10 articles per page on the home feed and 5 articles per page on profile pages.
+16. Article slugs must not be empty (validated before API call).
+17. When saving an article that already has a slug, a PUT request is made (update). Otherwise, a POST request is made (create).
+18. After successfully creating or updating an article, the user is redirected to the article detail page.
+19. After deleting an article, the user is redirected to the home page.
+20. Article lists can be filtered by type ('feed' for personal feed, 'all' for global), author, favorited user, or tag.
+
+COMMENTS
+----------------------------------------------------------------------
+21. Any authenticated user can add a comment to an article.
+22. A comment consists of a body text field.
+23. Only the author of a comment can delete that comment.
+24. After adding a comment, it appears at the top of the comments list.
+25. After deleting a comment, it is removed from the comments list.
+26. Unauthenticated users see a prompt to sign in or sign up to add comments.
+
+FAVORITES
+----------------------------------------------------------------------
+27. Authenticated users can favorite or unfavorite an article.
+28. Unauthenticated users who attempt to favorite are redirected to the registration page.
+29. Favoriting an article increments the favorites count; unfavoriting decrements it.
+30. The favorite button visually changes state between favorited (filled) and unfavorited (outline).
+
+FOLLOWS
+----------------------------------------------------------------------
+31. Authenticated users can follow or unfollow another user's profile.
+32. Unauthenticated users who attempt to follow are redirected to the registration page.
+33. The follow button visually changes between 'Follow' and 'Unfollow' text and styling.
+34. Users cannot see the follow button on their own profile; they see an 'Edit Profile Settings' link instead.
+
+PROFILE
+----------------------------------------------------------------------
+35. Each user has a profile page displaying their image, username, and bio.
+36. The profile page has two tabs: 'My Articles' (articles authored by the user) and 'Favorited Articles'.
+37. 'My Articles' filters the article list by author username.
+38. 'Favorited Articles' filters the article list by favorited username.
+39. Profile pages display 5 articles per page.
+
+SETTINGS
+----------------------------------------------------------------------
+40. Authenticated users can update their profile picture URL, username, bio, email, and password.
+41. After updating settings, the user is redirected to their profile page.
+42. The settings page includes a logout button that destroys the JWT token, clears the current user, and reloads the page.
+
+DISPLAY RULES
+----------------------------------------------------------------------
+43. The application name 'Conduit' is displayed in lowercase in the header and footer.
+44. The home page banner (with the app name and tagline) is only shown to unauthenticated users.
+45. The header navigation changes based on authentication state: unauthenticated users see Home, Sign in, Sign up; authenticated users see Home, New Article, Settings, and their profile.
+46. Article dates are displayed in 'longDate' format.
+47. The footer displays the current year and attribution text.
+48. Error messages from API responses are displayed as a list showing 'field error_message' format.
+49. The page title follows the format 'Page Name — Conduit'.
+
+VALIDATION
+----------------------------------------------------------------------
+50. The registration form requires username, email, and password fields.
+51. The login form requires email and password fields.
+52. Editor form requires article title (other fields are optional).
+53. Tags in the editor are added via Enter key press and must not be duplicates.
+54. Tags can be removed by clicking the close icon on each tag.
+
+LIMITS & CONSTRAINTS
+----------------------------------------------------------------------
+55. Home page article list limit: 10 articles per page.
+56. Profile page article list limit: 5 articles per page.
+57. Article list pagination is only shown when there is more than one page of results.
+58. Form submission buttons are disabled during API request processing to prevent double submission.

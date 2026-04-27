@@ -1,0 +1,177 @@
+======================================================================
+APPLICATION FLOWS — Conduit (RealWorld) Application
+Extracted from source AngularJS 1.5 application
+======================================================================
+
+AUTHENTICATION FLOWS
+----------------------------------------------------------------------
+
+Flow 1: User Registration
+1. User navigates to /register
+2. System shows the registration form with Username, Email, and Password fields
+3. User fills in credentials and clicks "Sign up"
+4. System sends POST /users with { user: { username, email, password } }
+5a. SUCCESS: System stores JWT token in localStorage, sets current user, redirects to home page
+5b. FAILURE: System displays error messages from the API response (e.g., "email has already been taken")
+
+Flow 2: User Login
+1. User navigates to /login
+2. System shows the login form with Email and Password fields
+3. User fills in credentials and clicks "Sign in"
+4. System sends POST /users/login with { user: { email, password } }
+5a. SUCCESS: System stores JWT token in localStorage, sets current user, redirects to home page
+5b. FAILURE: System displays error messages from the API response (e.g., "email or password is invalid")
+
+Flow 3: User Logout
+1. User navigates to /settings
+2. User clicks "Or click here to logout."
+3. System clears current user state, destroys JWT token from localStorage
+4. System reloads the page (redirecting to home as unauthenticated user)
+
+Flow 4: Auth Verification on App Startup
+1. Application loads
+2. System checks for JWT token in localStorage
+3a. No token found: User is treated as unauthenticated
+3b. Token found: System sends GET /user with Authorization header
+4a. GET /user succeeds: Current user is set from response
+4b. GET /user fails (401): Token is destroyed, user is treated as unauthenticated
+
+NAVIGATION FLOWS
+----------------------------------------------------------------------
+
+Flow 5: Home Page Navigation
+1. User navigates to / (home page)
+2. System loads tags via GET /tags
+3. System determines initial feed type: 'feed' for authenticated users, 'all' for unauthenticated
+4. System loads articles via GET /articles or GET /articles/feed with pagination parameters
+5. User can click feed tabs (Your Feed, Global Feed) to change article list
+6. User can click a tag in the sidebar to filter articles by that tag
+7. User can click pagination links to navigate between pages
+
+Flow 6: Profile Navigation
+1. User clicks on an author's username or image
+2. System navigates to /@username
+3. System loads profile via GET /profiles/:username
+4. System shows profile info (image, username, bio)
+5. System loads user's articles via GET /articles?author=username (My Articles tab)
+6. User can click "Favorited Articles" tab to load GET /articles?favorited=username
+
+ARTICLE FLOWS
+----------------------------------------------------------------------
+
+Flow 7: Create Article
+1. Authenticated user navigates to /editor
+2. System shows empty editor form
+3. User fills in title, description, body (markdown), and optionally adds tags
+4. User can add tags by typing and pressing Enter; tags appear as pills
+5. User can remove tags by clicking the close icon
+6. User clicks "Publish Article"
+7. System sends POST /articles with { article: { title, description, body, tagList } }
+8a. SUCCESS: System redirects to /article/:slug
+8b. FAILURE: System displays error messages
+
+Flow 8: Edit Article
+1. Authenticated author navigates to /editor/:slug
+2. System loads article via GET /articles/:slug
+3. System verifies current user is the article author; if not, redirects to home
+4. System populates form with existing article data
+5. User modifies fields and clicks "Publish Article"
+6. System sends PUT /articles/:slug with { article: { title, description, body, tagList } }
+7a. SUCCESS: System redirects to /article/:slug
+7b. FAILURE: System displays error messages
+
+Flow 9: View Article
+1. User navigates to /article/:slug
+2. System loads article via GET /articles/:slug; on failure redirects to home
+3. System renders article body as HTML from markdown
+4. System loads comments via GET /articles/:slug/comments
+5. System sets page title to article title
+6. System shows article actions (edit/delete for author, follow/favorite for others)
+
+Flow 10: Delete Article
+1. Article author clicks "Delete Article" button on article detail page
+2. System sends DELETE /articles/:slug
+3. System redirects to home page regardless of success or failure
+
+COMMENT FLOWS
+----------------------------------------------------------------------
+
+Flow 11: Add Comment
+1. Authenticated user views an article
+2. User types comment text in the textarea
+3. User clicks "Post Comment"
+4. System sends POST /articles/:slug/comments with { comment: { body } }
+5a. SUCCESS: New comment appears at the top of the comments list, form is reset
+5b. FAILURE: Error messages are displayed
+
+Flow 12: Delete Comment
+1. Comment author views their comment on an article
+2. User clicks the trash icon on their comment
+3. System sends DELETE /articles/:slug/comments/:id
+4. Comment is removed from the comments list
+
+FAVORITE/UNFAVORITE FLOWS
+----------------------------------------------------------------------
+
+Flow 13: Favorite Article
+1. Authenticated user clicks the heart button on an article
+2. System sends POST /articles/:slug/favorite
+3. Article's favorited state changes to true, favorites count increments
+4. Button changes to filled style
+
+Flow 14: Unfavorite Article
+1. Authenticated user clicks the heart button on a favorited article
+2. System sends DELETE /articles/:slug/favorite
+3. Article's favorited state changes to false, favorites count decrements
+4. Button changes to outline style
+
+Flow 15: Unauthenticated Favorite Attempt
+1. Unauthenticated user clicks the heart button
+2. System redirects to /register
+
+FOLLOW/UNFOLLOW FLOWS
+----------------------------------------------------------------------
+
+Flow 16: Follow User
+1. Authenticated user clicks "Follow [username]" on a profile or article page
+2. System sends POST /profiles/:username/follow
+3. Button changes to "Unfollow [username]" with filled styling
+
+Flow 17: Unfollow User
+1. Authenticated user clicks "Unfollow [username]"
+2. System sends DELETE /profiles/:username/follow
+3. Button changes to "Follow [username]" with outline styling
+
+Flow 18: Unauthenticated Follow Attempt
+1. Unauthenticated user clicks the follow button
+2. System redirects to /register
+
+SETTINGS FLOWS
+----------------------------------------------------------------------
+
+Flow 19: Update Settings
+1. Authenticated user navigates to /settings
+2. System populates form with current user data (image, username, bio, email)
+3. User modifies fields (including optional new password)
+4. User clicks "Update Settings"
+5. System sends PUT /user with { user: { image, username, bio, email, password } }
+6a. SUCCESS: Current user is updated, system redirects to user's profile page
+6b. FAILURE: Error messages are displayed
+
+ERROR HANDLING
+----------------------------------------------------------------------
+
+Flow 20: API Error Display
+1. An API request returns an error response with { errors: { field: [messages] } }
+2. System extracts the errors object
+3. ListErrors component displays each error as "field message" in a list
+
+Flow 21: 401 Unauthorized Handling
+1. Any API request returns 401 status
+2. Auth interceptor catches the error
+3. JWT token is destroyed from localStorage
+4. Page is reloaded (user becomes unauthenticated)
+
+Flow 22: Navigation Error Handling
+1. An article, profile, or editor route fails to load data
+2. System redirects to the home page
