@@ -4,6 +4,8 @@ import { AuthComponent } from './auth/auth.component';
 import { ArticleComponent } from './article/article.component';
 import { EditorComponent } from './editor/editor.component';
 import { SettingsComponent } from './settings/settings.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfileArticlesComponent } from './profile/profile-articles.component';
 import { authGuard, noAuthGuard } from './core/auth.guard';
 
 export const routes: Routes = [
@@ -39,5 +41,19 @@ export const routes: Routes = [
     path: 'settings',
     component: SettingsComponent,
     canActivate: [authGuard]
+  },
+  {
+    path: '@:username',
+    component: ProfileComponent,
+    children: [
+      {
+        path: '',
+        component: ProfileArticlesComponent
+      },
+      {
+        path: 'favorites',
+        component: ProfileArticlesComponent
+      }
+    ]
   }
 ];
